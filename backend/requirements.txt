@@ -38,7 +38,21 @@ Pillow==10.4.0
 # Reports
 reportlab==4.2.5
 
+# AI providers
+groq==0.11.0
+
+# Billing (optional, falls back to mock if unset)
+stripe==10.12.0
+
+# WebSocket support
+wsproto==1.2.0
+websockets==13.1
+
+# Production server
+gunicorn==23.0.0
+
 # Utils
 python-dotenv==1.0.1
 slowapi==0.1.9
 redis==5.1.1
+email-validator==2.2.0
