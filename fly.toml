@@ -1,0 +1,52 @@
+# NEXUS ATLAS — Fly.io deployment
+# Usage:
+#   fly launch --copy-config --name nexus-atlas
+#   fly secrets set GROQ_API_KEY=... GEE_PROJECT=... STRIPE_SECRET_KEY=...
+#   fly deploy
+
+app = "nexus-atlas"
+primary_region = "gru"  # São Paulo — closest to Brazil
+kill_signal = "SIGINT"
+kill_timeout = "5s"
+
+[build]
+  dockerfile = "docker/Dockerfile.backend.prod"
+
+[env]
+  PORT = "8000"
+  WORKERS = "2"
+
+[http_service]
+  internal_port = 8000
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ["app"]
+
+  [http_service.checks]
+    [http_service.checks.health]
+      type = "http"
+      path = "/health"
+      interval = "30s"
+      timeout = "5s"
+      grace_period = "10s"
+
+[[services]]
+  protocol = "tcp"
+  internal_port = 8000
+
+  [services.concurrency]
+    type = "requests"
+    soft_limit = 50
+    hard_limit = 100
+
+[[vm]]
+  size = "shared-cpu-2x"
+  memory = "1gb"
+  cpu_kind = "shared"
+  cpus = 2
+
+[deploy]
+  release_command = "python scripts/setup_db.py"
+  strategy = "rolling"

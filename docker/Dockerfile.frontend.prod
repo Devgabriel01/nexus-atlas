@@ -1,0 +1,23 @@
+# NEXUS ATLAS — production frontend image (nginx serving Vite static build)
+
+# ─── Stage 1: build ───────────────────────────────────────────────────────
+FROM node:20-alpine AS builder
+
+WORKDIR /build
+COPY frontend/package*.json ./
+RUN npm ci --no-audit --no-fund
+
+COPY frontend/ ./
+ARG VITE_API_URL
+ARG VITE_MAPBOX_TOKEN
+ENV VITE_API_URL=${VITE_API_URL} \
+    VITE_MAPBOX_TOKEN=${VITE_MAPBOX_TOKEN}
+RUN npm run build
+
+# ─── Stage 2: nginx ───────────────────────────────────────────────────────
+FROM nginx:1.27-alpine AS runtime
+COPY --from=builder /build/dist /usr/share/nginx/html
+COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80
+HEALTHCHECK --interval=30s --timeout=3s CMD wget -qO- http://localhost/ || exit 1
+CMD ["nginx", "-g", "daemon off;"]

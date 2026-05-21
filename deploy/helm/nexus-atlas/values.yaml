@@ -1,0 +1,76 @@
+image:
+  backend:
+    repository: ghcr.io/yourorg/nexus-atlas/backend
+    tag: latest
+    pullPolicy: IfNotPresent
+  frontend:
+    repository: ghcr.io/yourorg/nexus-atlas/frontend
+    tag: latest
+
+backend:
+  replicas: 2
+  resources:
+    requests: { cpu: 250m, memory: 512Mi }
+    limits:   { cpu: 1000m, memory: 1Gi }
+  env:
+    DEBUG: "false"
+    CORS_ORIGINS: "https://nexus-atlas.com"
+  service:
+    type: ClusterIP
+    port: 8000
+
+frontend:
+  replicas: 2
+  resources:
+    requests: { cpu: 100m, memory: 128Mi }
+    limits:   { cpu: 500m, memory: 256Mi }
+  service:
+    type: ClusterIP
+    port: 80
+
+ingress:
+  enabled: true
+  className: nginx
+  hosts:
+    - host: nexus-atlas.com
+      paths:
+        - { path: /api,    pathType: Prefix, service: backend }
+        - { path: /ws,     pathType: Prefix, service: backend }
+        - { path: /,       pathType: Prefix, service: frontend }
+  tls:
+    - secretName: nexus-atlas-tls
+      hosts: [nexus-atlas.com]
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
+
+postgresql:
+  enabled: true
+  image:
+    repository: postgis/postgis
+    tag: 16-3.4
+  auth:
+    username: nexus
+    database: nexus_atlas
+    existingSecret: nexus-pg-credentials
+  primary:
+    persistence:
+      enabled: true
+      size: 50Gi
+
+secrets:
+  # Mount external secrets (Vault, SealedSecrets, ExternalSecrets, etc.)
+  existingSecret: nexus-atlas-secrets
+  required:
+    - SECRET_KEY
+    - GROQ_API_KEY
+    - GEE_PROJECT
+    - STRIPE_SECRET_KEY
+    - DATABASE_URL
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70

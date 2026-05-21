@@ -1,0 +1,130 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html, body, #root {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    background: #050810;
+  }
+
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #090d1a;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #1a2a4a;
+    border-radius: 2px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #00d4ff44;
+  }
+}
+
+@layer components {
+  .nexus-panel {
+    @apply bg-nexus-panel border border-nexus-border rounded-lg backdrop-blur-sm;
+    background: linear-gradient(135deg, rgba(13, 21, 38, 0.95) 0%, rgba(9, 13, 26, 0.98) 100%);
+  }
+
+  .nexus-border-glow {
+    border-color: rgba(0, 212, 255, 0.4);
+    box-shadow: 0 0 10px rgba(0, 212, 255, 0.1), inset 0 0 20px rgba(0, 212, 255, 0.03);
+  }
+
+  .nexus-text-mono {
+    @apply font-mono text-nexus-cyan;
+    text-shadow: 0 0 8px rgba(0, 212, 255, 0.6);
+  }
+
+  .nexus-btn {
+    @apply px-4 py-2 rounded border font-mono text-xs uppercase tracking-widest transition-all duration-200;
+    @apply border-nexus-border text-nexus-text hover:border-nexus-cyan hover:text-nexus-cyan;
+    @apply hover:shadow-nexus-cyan;
+  }
+
+  .nexus-btn-primary {
+    @apply nexus-btn border-nexus-cyan text-nexus-cyan;
+    @apply bg-nexus-cyan/10 hover:bg-nexus-cyan/20;
+    text-shadow: 0 0 8px rgba(0, 212, 255, 0.5);
+  }
+
+  .nexus-btn-danger {
+    @apply nexus-btn border-nexus-red text-nexus-red;
+    @apply bg-nexus-red/10 hover:bg-nexus-red/20;
+  }
+
+  .nexus-input {
+    @apply w-full bg-nexus-dark border border-nexus-border rounded px-3 py-2;
+    @apply font-mono text-sm text-nexus-text placeholder-nexus-muted;
+    @apply focus:outline-none focus:border-nexus-cyan focus:shadow-nexus-cyan;
+    @apply transition-all duration-200;
+  }
+
+  .nexus-label {
+    @apply font-mono text-xs uppercase tracking-widest text-nexus-muted mb-1 block;
+  }
+
+  .severity-critical {
+    @apply text-nexus-red;
+    text-shadow: 0 0 6px rgba(255, 34, 68, 0.8);
+  }
+  .severity-high {
+    @apply text-nexus-orange;
+    text-shadow: 0 0 6px rgba(255, 107, 0, 0.8);
+  }
+  .severity-medium {
+    @apply text-yellow-400;
+    text-shadow: 0 0 6px rgba(250, 204, 21, 0.6);
+  }
+  .severity-low {
+    @apply text-nexus-green;
+    text-shadow: 0 0 6px rgba(0, 255, 136, 0.6);
+  }
+}
+
+@layer utilities {
+  .text-glow-cyan {
+    text-shadow: 0 0 10px rgba(0, 212, 255, 0.8), 0 0 20px rgba(0, 212, 255, 0.4);
+  }
+  .text-glow-green {
+    text-shadow: 0 0 10px rgba(0, 255, 136, 0.8), 0 0 20px rgba(0, 255, 136, 0.4);
+  }
+  .text-glow-red {
+    text-shadow: 0 0 10px rgba(255, 34, 68, 0.8), 0 0 20px rgba(255, 34, 68, 0.4);
+  }
+
+  .scanline {
+    background: linear-gradient(
+      to bottom,
+      transparent 50%,
+      rgba(0, 212, 255, 0.02) 50%
+    );
+    background-size: 100% 4px;
+    pointer-events: none;
+  }
+
+  .grid-bg {
+    background-image:
+      linear-gradient(rgba(0, 212, 255, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 212, 255, 0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+}
+
+/* Mapbox overrides */
+.mapboxgl-canvas { outline: none; }
+.mapboxgl-ctrl-bottom-right,
+.mapboxgl-ctrl-bottom-left { display: none; }
+.mapboxgl-ctrl-logo { display: none !important; }

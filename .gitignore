@@ -1,0 +1,51 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+
+# Node
+node_modules/
+dist/
+.vite/
+
+# Env / secrets
+.env
+.env.local
+.env.production
+backend/.env
+frontend/.env
+keys/
+*.pem
+*.key
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs / output
+logs/
+scans/
+reports/
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# AI weights (large)
+ai_models/weights/*.pt
+ai_models/weights/*.onnx
+
+# Deploy state
+*.tfstate
+*.tfstate.backup
+.terraform/

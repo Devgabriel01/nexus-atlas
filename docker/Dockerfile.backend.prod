@@ -1,0 +1,68 @@
+# NEXUS ATLAS — production backend image
+# Multi-stage build to keep the runtime small.
+
+# ─── Stage 1: builder ─────────────────────────────────────────────────────
+FROM python:3.11-slim AS builder
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
+
+WORKDIR /build
+
+# System libs needed to compile rasterio, opencv, etc.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    gcc \
+    g++ \
+    libgdal-dev \
+    libgl1 \
+    libglib2.0-0 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python deps into an isolated prefix
+COPY backend/requirements.txt /build/requirements.txt
+RUN pip install --prefix=/install --no-cache-dir -r requirements.txt && \
+    pip install --prefix=/install --no-cache-dir gunicorn==23.0.0
+
+# ─── Stage 2: runtime ─────────────────────────────────────────────────────
+FROM python:3.11-slim AS runtime
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PORT=8000
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libgdal32 \
+    libgl1 \
+    libglib2.0-0 \
+    curl \
+    && rm -rf /var/lib/apt/lists/* \
+    && useradd -m -u 1000 nexus
+
+WORKDIR /app
+
+# Copy installed Python packages from builder
+COPY --from=builder /install /usr/local
+
+# Copy source
+COPY backend /app/backend
+COPY geospatial /app/geospatial
+COPY ai_models /app/ai_models
+COPY scripts /app/scripts
+
+# Permissions
+RUN mkdir -p /app/scans /app/reports /app/logs && \
+    chown -R nexus:nexus /app
+
+USER nexus
+WORKDIR /app/backend
+ENV PYTHONPATH=/app/backend:/app/geospatial:/app/ai_models
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+  CMD curl -fsS http://localhost:${PORT}/health || exit 1
+
+EXPOSE 8000
+
+CMD ["sh", "-c", "gunicorn app.main:app -w ${WORKERS:-2} -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:${PORT} --access-logfile - --error-logfile - --timeout 120"]

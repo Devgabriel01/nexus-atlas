@@ -1,0 +1,13 @@
+apiVersion: v2
+name: nexus-atlas
+description: NEXUS ATLAS — Geospatial Intelligence Platform
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+keywords:
+  - geospatial
+  - satellite
+  - earth-engine
+  - ai
+maintainers:
+  - name: NEXUS Team
