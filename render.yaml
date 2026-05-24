@@ -2,7 +2,7 @@ services:
   - type: web
     name: nexus-atlas-backend
     runtime: docker
-    dockerfilePath: ./docker/Dockerfile.backend.prod
+    dockerfilePath: ./docker/Dockerfile.backend.render
     plan: free
     healthCheckPath: /health
     autoDeploy: true

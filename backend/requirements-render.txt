@@ -1,0 +1,51 @@
+# NEXUS ATLAS — production deps optimized for Render free tier
+# Skips heavy native libs (GDAL, torch, opencv) that exceed free build limits.
+# Scans run in light mode (mock detections); Groq AI + Earth Engine work fully.
+
+# Core web
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+gunicorn==23.0.0
+pydantic==2.9.2
+pydantic-settings==2.5.2
+
+# Database (Postgres + SQLite both supported)
+sqlalchemy[asyncio]==2.0.35
+asyncpg==0.29.0
+aiosqlite==0.20.0
+
+# Auth
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+bcrypt==4.0.1
+python-multipart==0.0.12
+email-validator==2.2.0
+
+# HTTP
+httpx==0.27.2
+aiofiles==24.1.0
+
+# AI providers (pure Python, no compilation)
+groq==0.11.0
+
+# Earth Engine (pure Python API client — no GDAL needed)
+earthengine-api==0.1.408
+
+# Geospatial helpers (pure Python)
+shapely==2.0.6
+
+# Numbers
+numpy==1.26.4
+
+# Reports
+reportlab==4.2.5
+
+# WebSocket
+wsproto==1.2.0
+websockets==13.1
+
+# Optional billing
+stripe==10.12.0
+
+# Utils
+python-dotenv==1.0.1
